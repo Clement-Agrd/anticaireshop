@@ -66,10 +66,7 @@ public class Interact : MonoBehaviour
                     {
                         hit.transform.SendMessage("Interacting", SendMessageOptions.DontRequireReceiver);
                     }
-                    if (Input.GetButtonDown("Squint"))
-                    {
-                        hit.transform.SendMessage("Looking", SendMessageOptions.DontRequireReceiver);
-                    }
+                  
                 }
             }
             else if (hit.transform.tag != "Interactable")
