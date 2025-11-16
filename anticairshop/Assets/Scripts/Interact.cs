@@ -19,8 +19,8 @@ public class Interact : MonoBehaviour
     private bool alreadyHovered = false;
     private bool alreadyHovered2 = false;
     [Header("General Interaction Variables")]
-    public GameObject InteractionUI;
-    public GameObject CrosshairUI;
+    //public GameObject InteractionUI;
+    //public GameObject CrosshairUI;
     private Animation anim;
     private Text dispText;
     private float dist = 1000;
@@ -33,8 +33,8 @@ public class Interact : MonoBehaviour
 
     void Start()
     {
-        anim = InteractionUI.GetComponent<Animation>();
-        dispText = InteractionUI.GetComponent<Text>();
+        //anim = InteractionUI.GetComponent<Animation>();
+        //dispText = InteractionUI.GetComponent<Text>();
         dispText.text = "";
     }
 
@@ -57,7 +57,7 @@ public class Interact : MonoBehaviour
                     if (!alreadyHovered)
                     {
                         anim.Play("An_InteractTextPopup");
-                        CrosshairUI.SetActive(true);
+                        //CrosshairUI.SetActive(true);
                         alreadyHovered2 = false;
                         alreadyHovered = true;
                     }
@@ -71,7 +71,7 @@ public class Interact : MonoBehaviour
             }
             else if (hit.transform.tag != "Interactable")
             {
-                CrosshairUI.SetActive(false);
+                //CrosshairUI.SetActive(false);
 
                 hover = false;
                 alreadyHovered = false;
@@ -91,7 +91,7 @@ public class Interact : MonoBehaviour
         {
             hover = false;
             dispText.text = "";
-            CrosshairUI.SetActive(false);
+            //CrosshairUI.SetActive(false);
             storedIntObj = null;
         }
     }
