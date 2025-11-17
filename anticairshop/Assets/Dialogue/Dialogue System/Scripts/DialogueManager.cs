@@ -7,10 +7,18 @@ namespace HeneGames.DialogueSystem
 {
     public class DialogueManager : MonoBehaviour
     {
+        public static DialogueManager instance;
+        public static int collectedItems = 0;
         private int currentSentence;
         private float coolDownTimer;
         private bool dialogueIsOn;
         private DialogueTrigger dialogueTrigger;
+        private List<NPC_Centence> filteredSentences;
+
+        private void Awake()
+        {
+            instance = this;
+        }
 
         public enum TriggerState
         {
@@ -169,68 +177,55 @@ namespace HeneGames.DialogueSystem
 
         public void StartDialogue()
         {
-            //Start event
-            if(dialogueTrigger != null)
+            // Filtrer les phrases selon collectedItems
+            filteredSentences = new List<NPC_Centence>();
+
+            foreach (var s in sentences)
             {
-                dialogueTrigger.startDialogueEvent.Invoke();
+                if (collectedItems >= s.requiredItemCount)
+                    filteredSentences.Add(s);
             }
 
-            //Reset sentence index
+            // Sécurité
+            if (filteredSentences.Count == 0)
+                return;
+
             currentSentence = 0;
 
-            //Show first sentence in dialogue UI
+            // UI
             ShowCurrentSentence();
+            PlaySound(filteredSentences[currentSentence].sentenceSound);
 
-            //Play dialogue sound
-            PlaySound(sentences[currentSentence].sentenceSound);
-
-            //Cooldown timer
-            coolDownTimer = sentences[currentSentence].skipDelayTime;
+            coolDownTimer = filteredSentences[currentSentence].skipDelayTime;
         }
 
         public void NextSentence(out bool lastSentence)
         {
-            //The next sentence cannot be changed immediately after starting
             if (coolDownTimer > 0f)
             {
                 lastSentence = false;
                 return;
             }
 
-            //Add one to sentence index
             currentSentence++;
-
-            //Next sentence event
-            if (dialogueTrigger != null)
-            {
-                dialogueTrigger.nextSentenceDialogueEvent.Invoke();
-            }
 
             nextSentenceDialogueEvent.Invoke();
 
-            //If last sentence stop dialogue and return
-            if (currentSentence > sentences.Count - 1)
+            if (currentSentence > filteredSentences.Count - 1)
             {
                 StopDialogue();
-
                 lastSentence = true;
-
                 endDialogueEvent.Invoke();
-
                 return;
             }
 
-            //If not last sentence continue...
             lastSentence = false;
 
-            //Play dialogue sound
-            PlaySound(sentences[currentSentence].sentenceSound);
+            PlaySound(filteredSentences[currentSentence].sentenceSound);
 
-            //Show next sentence in dialogue UI
             ShowCurrentSentence();
 
-            //Cooldown timer
-            coolDownTimer = sentences[currentSentence].skipDelayTime;
+            coolDownTimer = filteredSentences[currentSentence].skipDelayTime;
         }
 
         public void StopDialogue()
@@ -270,25 +265,14 @@ namespace HeneGames.DialogueSystem
 
         private void ShowCurrentSentence()
         {
-            if (sentences[currentSentence].dialogueCharacter != null)
-            {
-                //Show sentence on the screen
-                DialogueUI.instance.ShowSentence(sentences[currentSentence].dialogueCharacter, sentences[currentSentence].sentence);
+            var s = filteredSentences[currentSentence];
 
-                //Invoke sentence event
-                sentences[currentSentence].sentenceEvent.Invoke();
-            }
+            if (s.dialogueCharacter != null)
+                DialogueUI.instance.ShowSentence(s.dialogueCharacter, s.sentence);
             else
-            {
-                DialogueCharacter _dialogueCharacter = new DialogueCharacter();
-                _dialogueCharacter.characterName = "";
-                _dialogueCharacter.characterPhoto = null;
+                DialogueUI.instance.ShowSentence(new DialogueCharacter(), s.sentence);
 
-                DialogueUI.instance.ShowSentence(_dialogueCharacter, sentences[currentSentence].sentence);
-
-                //Invoke sentence event
-                sentences[currentSentence].sentenceEvent.Invoke();
-            }
+            s.sentenceEvent.Invoke();
         }
 
         public int CurrentSentenceLenght()
@@ -309,6 +293,8 @@ namespace HeneGames.DialogueSystem
 
         [TextArea(3, 10)]
         public string sentence;
+
+        public int requiredItemCount = 0;   
 
         public float skipDelayTime = 0.5f;
 
