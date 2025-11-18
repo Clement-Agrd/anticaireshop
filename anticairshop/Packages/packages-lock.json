@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.sakana3.probuilderhelpermenu": {
+      "version": "https://github.com/sakana3/ProBuilderHelperMenu.git?path=package",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6df2754ac707cfc11474f1c80202a662ae4a19ac"
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.9",
       "depth": 0,
@@ -121,6 +128,28 @@
         "com.unity.rendering.light-transport": "1.0.1"
       }
     },
+    "com.unity.render-pipelines.high-definition": {
+      "version": "17.2.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.video": "1.0.0",
+        "com.unity.modules.animation": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.render-pipelines.core": "17.2.0",
+        "com.unity.shadergraph": "17.2.0",
+        "com.unity.visualeffectgraph": "17.2.0",
+        "com.unity.render-pipelines.high-definition-config": "17.2.0"
+      }
+    },
+    "com.unity.render-pipelines.high-definition-config": {
+      "version": "17.2.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.render-pipelines.core": "17.2.0"
+      }
+    },
     "com.unity.render-pipelines.universal": {
       "version": "17.2.0",
       "depth": 0,
@@ -211,6 +240,15 @@
       "dependencies": {
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
+      }
+    },
+    "com.unity.visualeffectgraph": {
+      "version": "17.2.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.shadergraph": "17.2.0",
+        "com.unity.render-pipelines.core": "17.2.0"
       }
     },
     "com.unity.visualscripting": {
