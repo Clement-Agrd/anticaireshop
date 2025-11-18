@@ -31,12 +31,6 @@ public class Interact : MonoBehaviour
     public GameObject currentObj = null;
     private GameObject storedIntObj;
 
-    void Start()
-    {
-        //anim = InteractionUI.GetComponent<Animation>();
-        //dispText = InteractionUI.GetComponent<Text>();
-        dispText.text = "";
-    }
 
     // Update is called once per frame
     void Update()
@@ -53,10 +47,8 @@ public class Interact : MonoBehaviour
                 if (dist < 3)
                 {
                     storedIntObj.transform.SendMessage("Hovering", hit.point, SendMessageOptions.DontRequireReceiver);
-                    dispText.text = message;
                     if (!alreadyHovered)
                     {
-                        anim.Play("An_InteractTextPopup");
                         //CrosshairUI.SetActive(true);
                         alreadyHovered2 = false;
                         alreadyHovered = true;
@@ -77,7 +69,6 @@ public class Interact : MonoBehaviour
                 alreadyHovered = false;
                 if (!alreadyHovered2)
                 {
-                    anim.Play("An_InteractTextPopout");
                     alreadyHovered2 = true;
                 }
                 if(storedIntObj != null)
@@ -90,7 +81,6 @@ public class Interact : MonoBehaviour
         else
         {
             hover = false;
-            dispText.text = "";
             //CrosshairUI.SetActive(false);
             storedIntObj = null;
         }

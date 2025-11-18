@@ -1,5 +1,8 @@
-﻿using HeneGames.DialogueSystem;
+﻿
+using HeneGames.DialogueSystem;
 using UnityEngine;
+using TMPro;
+using System.Collections;
 
 [RequireComponent(typeof(Renderer))]
 public class PickableItem : MonoBehaviour
@@ -11,17 +14,25 @@ public class PickableItem : MonoBehaviour
     [Header("UI Messages")]
     public string availableMessage = "Ramasser l'objet";
     public string missingRequirementMessage = "Un autre objet est nécessaire";
+    public string alreadyPickedMessage = "Cet objet a déjà été ramassé";
 
     [Header("Visuals")]
     public Color targetColor = Color.yellow;
-    public float pickupRange = 3f; // distance max pour interagir
+    public float pickupRange = 3f;
+
+    [Header("UI")]
+    public GameObject uiPanel;
+    public TMP_Text uiText;
 
     private Renderer rend;
     private Color originColor;
     private bool over = false;
+    private bool hasBeenPicked = false;
+    private bool canInteract = true; // ✅ Nouveau flag
 
     private Interact interactUI;
     private GameObject mainCam;
+    private Coroutine hideCoroutine;
 
     void Start()
     {
@@ -32,53 +43,115 @@ public class PickableItem : MonoBehaviour
         interactUI = mainCam.GetComponent<Interact>();
         rend = GetComponent<Renderer>();
         originColor = rend.material.color;
+
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
     }
 
-    // Appelé par Interact.cs
     public void Hovering(Vector3 hitPoint)
     {
-        // Vérifie la distance pour être sûr
         float dist = Vector3.Distance(mainCam.transform.position, transform.position);
         if (dist <= pickupRange)
         {
             over = true;
-            interactUI.message = (DialogueManager.collectedItems >= requiredItemCount) 
-                ? availableMessage 
-                : missingRequirementMessage;
+            if (!hasBeenPicked)
+            {
+                interactUI.message = (DialogueManager.collectedItems >= requiredItemCount)
+                    ? availableMessage
+                    : missingRequirementMessage;
+            }
+            else
+            {
+                interactUI.message = alreadyPickedMessage;
+            }
         }
         else
         {
             over = false;
+            HideUI();
         }
     }
 
     public void UnHover()
     {
         over = false;
+        HideUI();
     }
 
     void FixedUpdate()
     {
-        // Changement de couleur
         rend.material.color = Color.Lerp(rend.material.color, over ? targetColor : originColor, Time.deltaTime * 4);
 
-        // Vérifie si on est toujours à portée
         float dist = Vector3.Distance(mainCam.transform.position, transform.position);
-        if (dist > pickupRange) over = false;
-
-        // Ramassage si hover + bouton + condition
-        if (over && Input.GetButton("Interact"))
+        if (dist > pickupRange)
         {
-            if (DialogueManager.collectedItems >= requiredItemCount)
+            over = false;
+            HideUI();
+        }
+
+        if (over && Input.GetButton("Interact") && canInteract) // ✅ Vérifie canInteract
+        {
+            if (!hasBeenPicked)
             {
-                DialogueManager.collectedItems++;
-                Debug.Log("Objet ramassé : " + itemName + " | Total = " + DialogueManager.collectedItems);
-                gameObject.SetActive(false);
+                if (DialogueManager.collectedItems >= requiredItemCount)
+                {
+                    DialogueManager.collectedItems++;
+                    hasBeenPicked = true;
+                    uiPanel.SetActive(true);
+                    ShowUI("Objet ramassé : " + itemName + " | Total = " + DialogueManager.collectedItems, 2f);
+                }
+                else
+                {
+                    uiPanel.SetActive(true);
+                    ShowUI("Pas assez d’objets pour ramasser " + itemName, 2f);
+                }
             }
             else
             {
-                Debug.Log("Pas assez d’objets pour ramasser " + itemName);
+                uiPanel.SetActive(true);
+                ShowUI(alreadyPickedMessage, 2f);
             }
+
+            // ✅ Bloque l'input pendant 2 secondes
+            StartCoroutine(BlockInput(2f));
         }
+    }
+
+    void ShowUI(string message, float delay = 0f)
+    {
+        if (uiText != null)
+            uiText.text = message;
+        if (uiPanel != null)
+            uiPanel.SetActive(true);
+
+        if (hideCoroutine != null)
+            StopCoroutine(hideCoroutine);
+
+        if (delay > 0f)
+            hideCoroutine = StartCoroutine(HideAfterDelay(delay));
+    }
+
+    void HideUI()
+    {
+        if (hideCoroutine != null)
+            StopCoroutine(hideCoroutine);
+
+        if (uiText != null)
+            uiText.text = "";
+        if (uiPanel != null)
+            uiPanel.SetActive(false);
+    }
+
+    IEnumerator HideAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        HideUI();
+    }
+
+    IEnumerator BlockInput(float delay)
+    {
+        canInteract = false;
+        yield return new WaitForSeconds(delay);
+        canInteract = true;
     }
 }
