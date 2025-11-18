@@ -7,14 +7,14 @@ public class Teleportation : MonoBehaviour
     public GameObject ref2;
     public bool basemap;
     
-    
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         player.transform.position = ref1.transform.position;
         basemap = true;
     }
 
-    
+    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Backspace))
