@@ -73,7 +73,6 @@ public class PlayerMovement : MonoBehaviour
     private GameObject mainCam;
 
 
-
     [HideInInspector]
     public bool crouching = false;
     [Tooltip("Toggle or hold crouch")]
