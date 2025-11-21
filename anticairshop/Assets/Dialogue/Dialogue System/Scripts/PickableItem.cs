@@ -87,12 +87,16 @@ public class PickableItem : MonoBehaviour
         if (dist > pickupRange)
         {
             over = false;
-            HideUI();
+        }
+        else
+        {
+            over = true;
         }
 
         if (over && Input.GetButton("Interact") && canInteract) // ✅ Vérifie canInteract
         {
-            if (!hasBeenPicked)
+            Debug.Log("Interact");
+            if (!hasBeenPicked && !uiPanel.activeInHierarchy)
             {
                 if (DialogueManager.collectedItems >= requiredItemCount)
                 {
@@ -120,6 +124,7 @@ public class PickableItem : MonoBehaviour
 
     void ShowUI(string message, float delay = 0f)
     {
+        Debug.Log("ui where");
         if (uiText != null)
             uiText.text = message;
         if (uiPanel != null)

@@ -49,6 +49,7 @@ public class InspectNote : MonoBehaviour
         originColor = pageRend.material.color;
         playerScript = FindFirstObjectByType<PlayerMovement>();
         lookScripts = FindObjectsOfType<MouseLook>();
+        Debug.Log(lookScripts.Length);
         noteUI.transform.parent.gameObject.SetActive(false);
     }
 
