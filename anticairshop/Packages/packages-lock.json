@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.sakana3.probuilderhelpermenu": {
+      "version": "https://github.com/sakana3/ProBuilderHelperMenu.git?path=package",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6df2754ac707cfc11474f1c80202a662ae4a19ac"
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.9",
       "depth": 0,

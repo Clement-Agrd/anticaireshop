@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.sakana3.probuilderhelpermenu": "https://github.com/sakana3/ProBuilderHelperMenu.git?path=package",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.collab-proxy": "2.10.0",
     "com.unity.ide.rider": "3.0.38",

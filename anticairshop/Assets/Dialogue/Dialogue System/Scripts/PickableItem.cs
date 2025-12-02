@@ -12,9 +12,10 @@ public class PickableItem : MonoBehaviour
     public int requiredItemCount = 0;
 
     [Header("UI Messages")]
-    public string availableMessage = "Ramasser l'objet";
+    public string availableMessage = "examiner l'objet";
+    public string firstMessage = "tu examine l'objet";
     public string missingRequirementMessage = "Un autre objet est nécessaire";
-    public string alreadyPickedMessage = "Cet objet a déjà été ramassé";
+    public string alreadyPickedMessage = "Cet objet a déjà été examiné";
 
     [Header("Visuals")]
     public Color targetColor = Color.yellow;
@@ -29,7 +30,6 @@ public class PickableItem : MonoBehaviour
     private bool over = false;
     private bool hasBeenPicked = false;
     private bool canInteract = true; // ✅ Nouveau flag
-
     private Interact interactUI;
     private GameObject mainCam;
     private Coroutine hideCoroutine;
@@ -43,6 +43,7 @@ public class PickableItem : MonoBehaviour
         interactUI = mainCam.GetComponent<Interact>();
         rend = GetComponent<Renderer>();
         originColor = rend.material.color;
+        
 
         if (uiPanel != null)
             uiPanel.SetActive(false);
@@ -86,24 +87,28 @@ public class PickableItem : MonoBehaviour
         if (dist > pickupRange)
         {
             over = false;
-            HideUI();
+        }
+        else
+        {
+            over = true;
         }
 
         if (over && Input.GetButton("Interact") && canInteract) // ✅ Vérifie canInteract
         {
-            if (!hasBeenPicked)
+            Debug.Log("Interact");
+            if (!hasBeenPicked && !uiPanel.activeInHierarchy)
             {
                 if (DialogueManager.collectedItems >= requiredItemCount)
                 {
                     DialogueManager.collectedItems++;
                     hasBeenPicked = true;
                     uiPanel.SetActive(true);
-                    ShowUI("Objet ramassé : " + itemName + " | Total = " + DialogueManager.collectedItems, 2f);
+                    ShowUI(firstMessage, 2f);
                 }
                 else
                 {
                     uiPanel.SetActive(true);
-                    ShowUI("Pas assez d’objets pour ramasser " + itemName, 2f);
+                    ShowUI(missingRequirementMessage, 2f);
                 }
             }
             else
@@ -119,6 +124,7 @@ public class PickableItem : MonoBehaviour
 
     void ShowUI(string message, float delay = 0f)
     {
+        Debug.Log("ui where");
         if (uiText != null)
             uiText.text = message;
         if (uiPanel != null)
